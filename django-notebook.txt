@@ -1,0 +1,81 @@
+Como criar um projeto django
+
+Tutorial fácil e rápido 
+100% gratuito
+sem vírus
+
+
+Criar Ambiente Virtual
+python -m vent .vent
+
+Em seguida, TENTE o comando:
+.vent\Scripts\activate
+
+se ocorrer erro de permissão, execute o comando:
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+Execute novamente o penúltimo comando
+
+
+Instando o Django:
+pip install django
+
+
+Criando um projeto:
+django-admin startproject [Projeto] .
+
+# NOTA IMPORTANTÍSSIMA:
+# Se a pasta que você criou já é o nome do projeto, coloque apenas um ponto (.) no final do "startproject" e o nome do projeto será "setup"
+
+Iniciar o servidor:
+python manage.py runserver
+
+Para parar o servidor:
+selecione o CMD e pressione Ctrl + C 
+
+
+Django's Apps DEF:
+Aplicativos são para definir funções específicas para partes do projeto e o Projeto faz com que as apps possam trabalhar juntos
+Exemplo:
+Blog (projeto) --> Usuário (app1) e Autor (app2)
+
+Criar Aplicativo:
+django-admin startapp [App]
+
+Colocar nome que faça sentido no que ela faz
+
+
+O que temos até agora:
+
+setup:
+settings.py -> define as configurações do projeto, como a inicialização de apps, time zone, lingueagem etc.
+urls.py -> define quais urls o projeto vai ter
+wsgi.py -> é um padrão python que faz comque o projeto consiga se comunicar com um servidor de aplicações web 
+asgi.py -> mesma coisa, mas, para específico para aplicações assíncronas
+(ver qual mexer depois, pois, no desenvolvimeto, não precisa se preucupar)
+
+app:
+admin.py -> altera as configurações do admin
+apps.py -> configurações específicas da app específica
+models.py -> define os modelos da app
+tests.py -> automações para realizações de testes
+views.py -> visualizações do projeto
+[DIR] migrations -> migrações do app
+
+
+Como instalar apps no django ou seja, fazer o app ser reconhecido pelo projeto como um projeto instalado: 
+setup/settings.py -> 
+
+INSTALLED_APPS =[
+
+[...],
+
+# 2 jeitos:
+
+# Jeito "certo":
+'aplicativo',
+
+# Jeito recomendado pelos criadores:
+'aplicativo.apps.AplicativoConfig',
+
+]
