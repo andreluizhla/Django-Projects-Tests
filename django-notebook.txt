@@ -79,3 +79,119 @@ INSTALLED_APPS =[
 'aplicativo.apps.AplicativoConfig',
 
 ]
+
+
+Criando uma View:
+view.py
+
+from django.shortcuts import render
+from django.http import HttpResponse
+
+# view que 
+def home(request):
+    return HttpResponse("<h1>Olá Mundo!</h1>")
+
+
+urls.py
+
+urlpatterns = [
+    path('admin/', admin.site.urls)
+    path('', home),
+]
+
+
+Usando Templates
+
+Hierarquia para templates:
+APP>templates>APP>home.html
+
+
+viwes.py
+
+def home(request):
+    return render(request, "APP/home.html")
+
+
+Modelos:
+Modelos são como tabelas, onde, cada coluna de uma tabela, se torna um atributo de uma classe Modelo.
+Exemplo:
+
+Livros>models.py
+
+from django.db import models
+
+class Livros(models.Model):
+    title = models.CharField(max_length=100, null=False, blank=False)
+# data_criado = models.DateTimeField(auto_now_add=True, null=False, black=False)
+# auto_now_add significa que quando for criado algum valor, o modelo automaticamente já cria uma data e hora
+
+
+Banco de dados
+
+Extensão Recomendada: SQLite Viewer
+
+Terminal:
+python manage.py migrate
+
+Verificar em: 
+db.sqlite3
+se existe o nome do APP que criamos
+
+Django não cria a tabela do banco de dados usando o modelo, quem fica responsável por isso é o "migrations", localizado em: APP/migrations
+
+Então, para migrar um modelo será com o comando:
+python manage.py makemigrations
+
+Depois disso, verificar o caminho: APP/migrations
+e ver o arquivo que se criou
+então, executar de novo o comando: 
+python manage.py migrate
+
+Verificar o db.sqlite3 usando a extenção recomendada 
+então, analizar se existe o modelo do APP da seguinte maneira:
+[Nome da APP].[Nome do Modelo]
+
+
+
+Segurança nas Configurações
+
+caminho: setup/settings.py
+
+SECRET_KEY = 'senha_secretamente_secreta'
+
+Para evitar invasões e informações vazadas por deixar a senha secreta visível, devemos deixar em um arquivo separado
+
+executar o comando: pip install python-decouple
+e criar um arquivo na pasta principal com o nome: ".env"
+cortar a linha completa da SECRET_KEY e colar no arquivo .env, podendo tirar as aspas simples.
+No código principal, da biblioteca decouple, importe config e Csv, ao invés de "SECRET_KEY = 'Senha'", colocar:
+SECRET_KEY = config("SECRET_KEY") [Coloque o nome da variável que tinha colocado no arquivo externo]
+
+AVISOS:
+1. Use o arquivo externo SOMENTE na máquina que está desenvolvendo
+2. Caso o esteja usando o GitHub, garantir que no arquivo ".gitignore" tenha o nome do arquivo ".env"
+
+Fazer o mesmo usando o DEBUG e ALLOWED_HOSTS, com certas configurações adicionais
+segue o arquivo settings.py com as alterações feitas:
+
+from decouple import config, Csv
+
+SECRET_KEY = config("SECRET_KEY")
+
+DEBUG = config("DEBUG", cast=bool, default=False)
+
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", cast=Csv())
+
+
+Existe também como colocar uma certa segurança no DATABASES, sendo opcional essa etapa. Se for usar essa etapa de segurança, executar o 
+
+
+Código para a variável DATABASES:
+
+DATABASES = {
+    'default': config(
+        "DATABASE_URL", 
+        default=f'sqlite:///{BASE_DIR / "db.sqlite3"}, 
+        cast=db_url,
+    )
+}
