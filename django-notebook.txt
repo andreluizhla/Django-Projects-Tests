@@ -6,10 +6,10 @@ sem vírus
 
 
 Criar Ambiente Virtual
-python -m vent .vent
+python -m venv .venv
 
 Em seguida, TENTE o comando:
-.vent\Scripts\activate
+.venv\Scripts\activate
 
 se ocorrer erro de permissão, execute o comando:
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
@@ -73,10 +73,10 @@ INSTALLED_APPS =[
 # 2 jeitos:
 
 # Jeito "certo":
-'aplicativo',
+'APP',
 
 # Jeito recomendado pelos criadores:
-'aplicativo.apps.AplicativoConfig',
+'[APP].apps.[APP]Config',
 
 ]
 
@@ -87,13 +87,34 @@ view.py
 from django.shortcuts import render
 from django.http import HttpResponse
 
-# view que 
+# view que retorna uma resposta HTML
 def home(request):
     return HttpResponse("<h1>Olá Mundo!</h1>")
 
 
 urls.py
 
+LER ATENTAMENTE ÀS INTRUÇÕES A SEGUIR:
+URL configuration for setup project.
+
+The `urlpatterns` list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/5.2/topics/http/urls/
+Examples:
+Function views
+    1. Add an import:  from my_app import views
+    2. Add a URL to urlpatterns:  path('', views.home, name='home')
+Class-based views
+    1. Add an import:  from other_app.views import Home
+    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+Including another URLconf
+    1. Import the include() function: from django.urls import include, path
+    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+
+
+Código para importar o view do projeto usar do seguinte jeito:
+from [APP].views import home 
+
+Para poder visualizar:
 urlpatterns = [
     path('admin/', admin.site.urls)
     path('', home),
@@ -103,7 +124,7 @@ urlpatterns = [
 Usando Templates
 
 Hierarquia para templates:
-APP>templates>APP>home.html
+[APP]>templates>[APP]>home.html
 
 
 viwes.py
@@ -116,14 +137,23 @@ Modelos:
 Modelos são como tabelas, onde, cada coluna de uma tabela, se torna um atributo de uma classe Modelo.
 Exemplo:
 
-Livros>models.py
+[APP]>models.py
 
 from django.db import models
 
-class Livros(models.Model):
-    title = models.CharField(max_length=100, null=False, blank=False)
+class [APP](models.Model):
+    [ATRIBUTO] = models.CharField(max_length=100, null=False, blank=False)
 # data_criado = models.DateTimeField(auto_now_add=True, null=False, black=False)
 # auto_now_add significa que quando for criado algum valor, o modelo automaticamente já cria uma data e hora
+
+
+Exemplo:
+class Todo(models.Model):
+    title = models.CharField(max_length=100, null=False, blank=False)
+    created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
+    deadline = models.DateTimeField(null=False, blank=False)
+    finished_at = models.DateTimeField(null=True)
+
 
 
 Banco de dados
@@ -135,20 +165,20 @@ python manage.py migrate
 
 Verificar em: 
 db.sqlite3
-se existe o nome do APP que criamos
+se existe o nome do [APP] que criamos
 
-Django não cria a tabela do banco de dados usando o modelo, quem fica responsável por isso é o "migrations", localizado em: APP/migrations
+Django não cria a tabela do banco de dados usando o modelo, quem fica responsável por isso é o "migrations", localizado em: [APP]/migrations
 
 Então, para migrar um modelo será com o comando:
 python manage.py makemigrations
 
-Depois disso, verificar o caminho: APP/migrations
+Depois disso, verificar o caminho: [APP]/migrations
 e ver o arquivo que se criou
 então, executar de novo o comando: 
 python manage.py migrate
 
 Verificar o db.sqlite3 usando a extenção recomendada 
-então, analizar se existe o modelo do APP da seguinte maneira:
+então, analizar se existe o modelo do [APP] da seguinte maneira:
 [Nome da APP].[Nome do Modelo]
 
 
@@ -183,10 +213,22 @@ DEBUG = config("DEBUG", cast=bool, default=False)
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", cast=Csv())
 
 
-Existe também como colocar uma certa segurança no DATABASES, sendo opcional essa etapa. Se for usar essa etapa de segurança, executar o 
+Para a configuração do ALLOWED_HOSTS no arquivo .env, será da seguinte maneira: 
+ALLOWED_HOSTS=*
+Permitindo todos a entrar
 
+
+Existe também como colocar uma certa segurança no DATABASES, sendo opcional essa etapa. Se for usar essa etapa de segurança, executar o seguinte comando: "pip install dj-database-url"
+Então, importar para o código somente o "parse" como db_url para dicar mais fácil de entender.
+
+# Não é necessário por enquanto: Alterar o 'default' no DATABASES e colocar no arquivo externo da seguinte maneira:
+Apenas siga a configuração da seguinte maneira:
+
+instalar o "dj-database-url" para o Django enternder o tipo de arquivo de banco de dados a partir de uma URL
 
 Código para a variável DATABASES:
+
+from dj_databse_url import parse as db_url
 
 DATABASES = {
     'default': config(
@@ -195,3 +237,180 @@ DATABASES = {
         cast=db_url,
     )
 }
+
+
+Padronização do código (Usando o VSCode):
+
+instalar a biblioteca "black" usando: pip install black
+INSTALAR UMA EXTENÇÃO DO VSCODE PARA FAZER ISSO FUNCIONAAAAAAAAAR: "Black Formatter"
+pressionar "Ctrl + Shift + P" e pesquisar por: "Preferences: Open Workspace Settings (JSON)"
+e no arquivo que está localizado em: .vscode/setting.json
+e colocar as seguintes configurações:
+{
+    "editor.formatOnSave": true,
+    "python.formatting.provider": "black",
+    "editor.defaultFormatter": "ms-python.black-formatter"
+}
+
+
+
+Até agora foram modelos e exmplos, faça agora uma aplicação real!
+
+antes de tudo, instale a extensão (VSCode) Django por: Baptiste Darthenay e no arquivo .vscode/settings.json, adicione algumas configurações adicionais, ficando no final da seguinte maneira:
+{
+    "editor.formatOnSave": true,
+    "python.formatting.provider": "black",
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "files.associations": {
+        "**/templates/**/*.html": "django-html"
+    },
+    "emmet.includeLanguages": {
+        "django-html": "html"
+    }
+}
+
+agora:
+1. adicione outros arquivos .html na pasta templates
+2. linke com a sua respectiva visualização no "views.py"
+3. finalize com o link correspondente no "urls.py"
+
+
+Mostrando variáveis nas VIEWS:
+no arquivo "views.py", na função, crie uma variável e no retorno, adicione como parâmetro, da seguinte maneira:
+
+def funcao(request):
+    variavel = Cléber
+    return render(request, "[APP]/[VIEWAPP].html", {'[variavel]' : variavel})
+
+
+"[VIEWAPP].html":
+e para o template receber a variável e mostrar ela, basta colocar entre {{ [nome da variavel que esta entre aspas] }}
+Exemplo:
+<h1>Lista de Tarefas</h1>
+{{ nome }}
+
+Enviar listas:
+é a mesma coisa:
+def enviar_nomes():
+    alunos = ['Alberto', 'Bernardo', 'Cléber', 'Dênis', 'Estevão']
+    return render(request, "APP/lista_alunos.html", {'lista_alunos' : alunos})
+
+
+Porém, se seguir como no exemplo anterior:
+{{ lista_alunos }}
+
+ele vai mostrar uma lista mal formatada
+para resolver isso, faça da seguinte maneira:
+
+<ul>
+    {% for aluno in lista_alunos %}
+        <li>{{ aluno }}</li>
+    {% endfor %}
+</ul>
+
+
+
+Mostrando o que tem no banco de dados para a visualização deles no Views:
+"views.py":
+
+from .models import [ClasseBancoDados]
+
+def mostrar_banco(request):
+    [bancoDados] = [ClasseBancoDados].objects.all()
+    return render(request, '[APP]/mostrarBanco.html', {"[database]" : [bancoDados]})
+
+
+"template.html":
+
+<!--Fazer o que tiver que fazer-->
+<!-- Para usar algum atributo específico do modelo, usar: [Modelo].[atributo] -->
+
+
+Cadastro manual de dados no modelo:
+
+Para fazer o cadastro, instale o "MySQL por: *verificaded* Database Client"
+abrir a aba "Database" na barra lateral e Create Conection
+Ao abrir a aba para se conectar ao banco de dados, selecione a opção SQLite e vá para a aba de explorar arquivos e "copie o caminho" do banco de dados ("db.sqlite3") e cole na caixa abaixo das opções, e então, clique em Save. Talvez ele instale alguma coisa, mas deixe ele continuar e mostrar na aba lateral que se conectou.
+Depois de abrir a aba lateral "Database" e abrir o local do arquivo e depois "Tables", localize a tabela do banco de dados que deseja preencher, e clique na tabela.
+Após abrir a aba de edição, localize dois símbolos de "+" na barra superior, logo abaixo do código SQL, então, verifique qual é a opção de criar uma linha com uma janela de diálogo (Insert New Row By Dialog) e clique.
+Logo após isso, irá se abrir uma janela de diálogo para preencher as informações necessárias, caso apareça uma opção com um asterísco, significa que o campo DEVE SER OBRIGATÓRIAMENTE preenchido por ter a configuração "blank=False"
+
+
+Depois desse rolê...
+é possível realizar a criação (de fato) do site
+para facilitar a visualização do site, é importante não gastar muito tempo no CSS, mas sem ele fica complicado. Qual é a solução então? Usar um Framework! O recomendado é o BootStrap
+
+caramba...
+tudo isso sem vírus foi complicado...
+
+tips/dicks para saber:
+declaração de id's:
+{{ nome.id }} ou {{ nome.pk }}
+
+Mais comum -> pk = primary key
+
+para valores que aparecerem nulos (None) na visualização, é possível colocar um valore padrão para esse tipo de visualização:
+{{ algo_possívelmente.nulo|default:"-" }}
+
+
+Verificações em Django:
+é a mesma coisa para o for
+seque os exemplos:
+
+{% if [condição] %}
+    Verdadeiro
+{% else %}
+    Falso
+{% endif %}
+
+
+F*deu! Preciso alterar um campo no modelo, e agora???
+calma, o que você precisa fazer é:
+1. pare o servidor
+1,5. verifique se não vai ocorrer conflito de tipos, exemplo: se tenho um campo DateTimeField e quero transformar para DateField, o banco de dados vai falar "Q porra é essa???" e quando for exibir, vai aparecer um None na sua fuça, mesmo se no campo aparecer a informação do tipo anterior
+2. altere as configurações dos campos no models.py e salve
+3. execute o comando de fazer migrações
+4. verifique se ele identificou as alterações
+5. se ocorreu tudo certo, execute o comando de migrar
+6. verifique se o Django criou um novo arquivo com o nome das alterações
+7. verifique na visuaização se deu certo.
+
+
+
+Alterando o código para a versão mais atual:
+
+Function Based View (antigo):
+
+from django.shortcuts import render
+from .models import Todo
+def todo_list(request):
+    todos = Todo.objects.all()
+    return render(request, "todo/todo_list.html", 
+        {
+            'todos': todos
+        }
+    )
+
+
+Class Based View ("mais" recente e recomentado, por conta das heranças):
+
+"views.py":
+from django.views.generic import ListView
+
+from .models import Todo
+
+class TodoListView(ListView):
+    model = Todo
+
+
+"urls.py":
+from django.contrib import admin
+from django.urls import path
+from todo.views import TodoListView
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("", TodoListView.as_view()),
+]
+
+
+No template colocar o nome da app com _list no final, tudo minúsculo
