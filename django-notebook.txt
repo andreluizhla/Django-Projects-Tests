@@ -414,3 +414,64 @@ urlpatterns = [
 
 
 No template colocar o nome da app com _list no final, tudo minúsculo
+
+
+ATENÇÃO!!!
+Ao criar um template usando CBV, colocar o nome da app + _list 
+
+Link:
+https://dev.to/franciscojdsjr/utilizando-class-based-views-cbvs-no-django-simplificando-o-desenvolvimento-web-4g18
+
+LISTA (IMPORTANTÍSSIMA) sobre CBV   :
+View: A classe base genérica que fornece funcionalidade mínima para processar uma solicitação e retornar uma resposta.
+TemplateView: Usada para exibir um modelo em resposta a uma solicitação.
+ListView e DetailView: Usadas para exibir uma lista de objetos ou um único objeto, geralmente de um modelo de banco de dados.
+CreateView, UpdateView e DeleteView: Usadas para criar, atualizar ou excluir objetos em um banco de dados.
+
+
+
+Cadastro de Informações:
+Usaremos CBV, mais especidicamente ListView e CreateView
+
+Irei mostar o código e comentar o q ele faz
+
+"views.py":
+
+from django.views.generic import ListView, CreateView -> importa uma visualização genérica para uma listagem de itens e um cadastro de itens
+from django.urls import reverse_lazy -> importa uma configuração que pega o caminho completo de um "name" de uma url que foi criada
+
+from .models import [MODELO] -> importa o modelo que iremos usar
+
+class MODELOListView(ListView): -> cria uma classe de visuaização do modelo, usando um modelo genérico de lista (caminho no template: "templates/[APP]/[APP]_list.html")
+    model = [MODELO] -> define o modelo a ser usado como o modelo do banco de dados
+
+class MODELOCreateView(CreateView): -> cria uma classe que pode criar itens no banco de dados com alguns parâmetros a mais que carrega junto
+    model = [MODELO] -> mesma coisa do anterior
+    fields = ['campo 1', 'campo 3', 'campo 4'] -> Define quais campos o usuário poderá preencher, seguindo o modelo no banco de dados [models.py]
+    success_url = reverse_lazy("[APP]_list") -> caso o envio dos dados ocorra de maneira esperada, ele irá pegar o caminho completo (reverse_lazy) de um "name" e redirecionar o usuário para esse caminho (verificar o nome da url no arquivo "urls.py")
+
+
+"urls.py":
+
+[...]
+
+from [APP].views import MODELOListView, MODELOCreateView -> importa as classes que criamos para definir a url deles
+
+
+urlpatterns = [ -> define as urls do projeto
+    path("admin/", admin.site.urls), -> caminho do admin
+    path("", MODELOListView.as_view(), name="[APP]_list"), -> define o caminho da lista de visualizações (observe que temos o "name='[APP]_list'" simbolizando que temos uma "nametag" / um nome para a nossa url)
+    path("create/", MODELOCreateView.as_view(), name="[APP]_create") -> define o caminho da url para criar itens para o banco de dados (note que tambem tem essa "nametag")
+]
+
+
+
+Para os templates, temos um novo arquivo, que é o [APP]_form.html , que, resumidamente, não muda muito, porém tem uns comandos específicos para ele que é importante ressaltar:
+
+Modelo Formulário HTML:
+
+<form method="POST"> -> envia os dados do form como Postagem
+    {% csrf_token %} -> Django cria um token para evitar ataques externos
+    {{ form }} -> parâmetro do 
+    <button type="submit">Salvar</button>
+</form>
