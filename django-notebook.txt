@@ -472,6 +472,129 @@ Modelo Formulário HTML:
 
 <form method="POST"> -> envia os dados do form como Postagem
     {% csrf_token %} -> Django cria um token para evitar ataques externos
-    {{ form }} -> parâmetro do 
+    {{ form }} -> parâmetro para a criação de um formulário
     <button type="submit">Salvar</button>
 </form>
+
+
+Pesquisar como aplicar estilos para o formulário individualmente
+
+Aplicando estilos para o formulário:
+
+Usando o Django-crispy-forms com o BootStrap:
+
+https://github.com/django-crispy-forms/crispy-bootstrap5
+
+Use o comando: pip install crispy-bootstrap5
+
+Aplicar nas configurações os seguintes coamndos:
+
+INSTALLED_APPS = (
+    ...
+    "crispy_forms",
+    "crispy_bootstrap5",
+    ...
+)
+
+outra forma de colocar isso é da seguinte forma:
+
+DJANGO_APPS = [
+    ...
+]
+
+MY_APPS = [
+    '[APP].apps.[APP]Config',
+]
+
+THIRD_PARTY_APPS = [
+    "crispy_forms",
+    "crispy_bootstrap5",
+]
+
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + MY_APPS
+
+
+# colocar no final do aplicativo:
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+
+template/[APP]_form.html
+no começo do arquivo:
+{% load crispy_forms_tags %}
+
+para o formulário:
+somente o formulário formatado:
+{{ form|crispy }}
+
+formulário "completo":
+{% crispy form %}
+
+
+Para modificar o nome do campo para quando for aparecer no formulário:
+Antes:
+criava o modelo e deixava lá
+no formulário iria aparecer do mesmo jeito que deixou no modelo
+
+Agora:
+quando criar o modelo,
+implementar o "verbose_name=''" para definir com qual nome vai aparecer no campo do formulário
+
+deadline = models.DateField(verbose_name="Data de Entrega", null=False, blank=False)
+
+
+Reaproveitamento de Código com a herança de templates:
+
+criar um arquivo "base.html" na pasta templates, NÃO NA PASTA QUE ESTÁ DENTRO DO TEMPLATE
+e pegar o código que se repete nos html do app e colocar lá
+quando fizer isso, substituir os conteúdos que se alteram e colocar um {% block [Tag] %} {% endblock [Tag] %} 
+A [Tag] é o título que se dá para o conteúdo que vai alí, como se fosse um ID de CSS.
+
+na página que será modificada (a página diferente a do base.html), pode retirar tudo, exceto o conteúdo que se modifica 
+na primeira linha é colocado o seguinte comando: {% extends "base.html" %}
+
+o conteúdo que se modifica é colocado entro do comando que criamos anteriormente com a mesma [Tag]
+segue exemplo:
+base.html
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block page_title %}{% endblock page_title %}</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+    </head>
+    <body>
+        <main class="container">
+            {% block content %} 
+            
+            {% endblock content %}
+        </main>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+    </body>
+</html>
+
+
+página_que_se_altera.html
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Lista de Tarefas</h1>
+
+[...]
+
+{% endblock content %}
+
+
+
+Atualização de Informações:
+no arquivo views.py importe o UpdateViews junto com o listView e CreateView e crie uma classe da mesma maneira do CreateView
+
+já no arquivo urls.py, importe a nova classe de update
+caso a url precise de alguma coisa variável, como um id específico para alterar então coloque:
+path("update/<int:pk>", ... ),
+dentro dos <> o Django entende que dentro é uma variável, onde os valores são: tipo:
+
+
