@@ -485,7 +485,7 @@ Usando o Django-crispy-forms com o BootStrap:
 
 https://github.com/django-crispy-forms/crispy-bootstrap5
 
-Use o comando: pip install crispy-bootstrap5
+Use o comando: 
 
 Aplicar nas configurações os seguintes coamndos:
 
@@ -592,9 +592,126 @@ página_que_se_altera.html
 Atualização de Informações:
 no arquivo views.py importe o UpdateViews junto com o listView e CreateView e crie uma classe da mesma maneira do CreateView
 
-já no arquivo urls.py, importe a nova classe de update
+já no arquivo urls.py, importe a nova classe de update pip install crispy-bootstrap5
 caso a url precise de alguma coisa variável, como um id específico para alterar então coloque:
 path("update/<int:pk>", ... ),
-dentro dos <> o Django entende que dentro é uma variável, onde os valores são: tipo:
+dentro dos <> o Django entende que dentro é uma variável, onde os valores são:
+tipoPrimitivo:nome
+tipo primitivo: int/str/bool...
+nome: nome da variável que irá receber algum valor
 
+como usar variáveis nas urls nos templates?
+quando criar um link para o site:
+{% url "todo_update" pk=todo.pk %}
+tem que definir o nome da url e fora das aspas, usar o nome que colocou recebendo algum valor, como o id de uma tarefa.
+
+
+Deletando informações:
+view.py
+
+class [MODELO]DeleteView(DeleteView):
+    model = [MODELO]
+    success_url = reverse_lazy("todo_list")
+
+
+urls.py
+path("delete/<int:pk>", [MODELO]DeleteView.as_view(), name="[app]_delete"),
+
+
+A página de deletar tem que ter o seguinte nome:
+[APP]_confirm_delete.html
+
+e vai ter o template com um form simples:
+<form method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Excluir</button>
+</form>
+
+
+SÓ ISSO...
+QUE BOSTA
+é a mesma coisa para a maior parte das views
+
+
+Criando uma View para atualizar a data de uma informação:
+
+views.py
+from datetime import date
+from django.shortcuts import get_object_or_404, redirect
+
+from django.views.generic import (
+    ListView, 
+    CreateView, 
+    UpdateView, 
+    DeleteView, 
+    View
+)
+
+class [MODELO]CompleteView(View):
+    def get(self, request, pk):
+        [app] = get_object_or_404([MODELO], pk=pk)
+        [app].finished_at = date.today()
+        [app].save()
+        return redirect("[APP]_list")
+
+
+urls.py
+path("complete/<int:pk>", [MOLDELO]CompleteView.as_view(), name="todo_complete"),
+
+
+desabilitar um botão de conclusão:
+<a href="{% url "task_complete" pk=task.pk %}" class="{% if task.finished_at %}disabled{% endif %}">Concluir</a>
+
+
+
+Ordenar uma lista:
+class [MODELO](models.Model):
+    
+    [...]
+
+    class Meta:
+        ordering = ["[atributo]"]
+
+para ordenar por ordem decrescente:
+ordering = ["-[atributo]"]
+
+
+Filosofia Django:
+FAT MODELS, SKINY VIEWS:
+visualizações leves e modelos pesados:
+pegue ações que se repetem nas views e coloque no modelo
+
+Exemplo:
+views.py
+
+class View(View):
+    def get(self, request, pk):
+        todo = get_object_or_404(Todo, pk=pk)
+        todo.finished_at = date.today() -> se repete
+        todo.save() -> se repete
+        return redirect("todo_list")
+
+
+models.py
+
+class [MODELO](models.Model):
+    
+    [...]
+
+    def mark_as_completed(self, request, pk):
+        if not self.finished_at:
+            self.finished_at = date.today()
+            self.save()
+
+
+views.py atualizado:
+class TodoCompleteView(View):
+    def get(self, request, pk):
+        todo = get_object_or_404(Todo, pk=pk)
+        todo.mark_as_completed()
+        return redirect("todo_list")
+        
+
+
+Fim do vídeo (https://www.youtube.com/watch?v=MsUL3Pgofl4)
 

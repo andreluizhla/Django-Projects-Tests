@@ -3,11 +3,19 @@
 {% load crispy_forms_tags %}
 
 {% block page_title %}
-    Cadastro de Tarefas
+    {% if todo.pk %}
+        Editar tarefa
+    {% else %}
+        Cadastro de Tarefas
+    {% endif %}
 {% endblock page_title %}
 
 {% block content %}
-    <h1>Cadastro de Tarefa</h1>
+    {% if todo.pk %}
+        <h1>Editar tarefa</h1>
+    {% else %}
+        <h1>Cadastro de Tarefas</h1>
+    {% endif %}
 
     <form method="POST">
         {% csrf_token %}
