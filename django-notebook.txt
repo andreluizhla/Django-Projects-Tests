@@ -4,6 +4,15 @@ Tutorial fácil e rápido
 100% gratuito
 sem vírus
 
+Comandos:
+pip install django
+pip install python-decouple
+pip install dj-database-url
+pip install black
+pip install crispy-bootstrap5
+
+Extensão Recomendada: 
+SQLite Viewer
 
 Criar Ambiente Virtual
 python -m venv .venv
