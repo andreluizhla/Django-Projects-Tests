@@ -13,6 +13,20 @@ pip install crispy-bootstrap5
 
 Extensão Recomendada: 
 SQLite Viewer
+Black Formatter
+MySQL por: Database Client
+
+{ 
+    "editor.formatOnSave": true, 
+    "python.formatting.provider": "black", 
+    "editor.defaultFormatter": "ms-python.black-formatter", 
+    "files.associations": { 
+        "**/templates/**/*.html": "django-html" 
+    }, 
+    "emmet.includeLanguages": { 
+        "django-html": "html" 
+    } 
+} 
 
 Criar Ambiente Virtual
 python -m venv .venv
